@@ -1,6 +1,6 @@
-# [Project name]
+# GrimX - Coding IDE
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A full VS Code-like coding IDE for Android built with Expo, featuring a 3D-animated Grim Reaper character and a dramatic black/grey/shining-red theme.
 
 ## Run & Operate
 
@@ -19,26 +19,43 @@ _Replace the heading above with the project's name, and this line with one sente
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
+- Mobile: Expo ~54, React Native 0.81, Expo Router v6
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/mobile/` — Expo mobile app (GrimX IDE)
+- `artifacts/mobile/app/` — Expo Router screens (intro, onboarding, questions, permissions, editor)
+- `artifacts/mobile/components/` — UI components (ActivityBar, TabBar, FileTree, MonacoEditor, GrimReaper, etc.)
+- `artifacts/mobile/context/` — AppContext (settings/onboarding), EditorContext (files/tabs/panels)
+- `artifacts/mobile/constants/colors.ts` — GrimX dark color tokens (always dark, identical light/dark keys)
+- `artifacts/mobile/hooks/useColors.ts` — `useColors()` hook for design tokens
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Monaco Editor is embedded via WebView with CDN (requires internet) — `buildHTML()` in MonacoEditor.tsx generates the full HTML string
+- GrimReaper SVG uses `react-native-svg` for internals with `setInterval` for eye glow (not Reanimated for SVG), and `Animated.View` wrapper for float
+- Tab switching uses `key={activeTab}` on MonacoEditor to force WebView remount — simpler than bidirectional sync
+- Auto-save debounced 1.5s after content changes
+- Onboarding flow: intro → onboarding → questions → permissions → editor (redirects based on AsyncStorage flag)
+- Files persisted to AsyncStorage under `@grimx_files`; custom changes merged over DEFAULT_FILES
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Dramatic animated intro screen with falling code particles and rising Grim Reaper
+- 3-slide horizontal onboarding, setup questions, permissions screen
+- VS Code-like IDE: ActivityBar, File Explorer, Search, Git Panel, Extensions Marketplace, Tab Bar, Breadcrumb, Monaco Editor, Integrated Terminal, Command Palette, Status Bar
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Color scheme: black (#0d0d0d background), grey (#1a1a1a surfaces), shining red (#CC0000 primary)
+- Never hardcode hex values in components except MonacoEditor HTML string
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Reanimated hook-using components must be top-level (not inside maps/conditions): always extract as separate components
+- `pnpm run typecheck` must be run from workspace root, not inside mobile folder
+- Package versions must match Expo SDK — use `expo install` or pin to expected versions
+- `react-native-webview@13.15.0` and `expo-notifications@~0.32.17` are pinned for Expo 54 compatibility
 
 ## Pointers
 
